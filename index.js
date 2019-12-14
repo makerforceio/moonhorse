@@ -80,7 +80,7 @@ const types = (req, res, next) => {
   req.stack = req.stack.map(val => {
     // To number
     if (!isNaN(+val)) {
-      return val;
+      return +val;
     }
 
     // To bool/null/undefined

@@ -143,6 +143,14 @@ app.get('/then', stack, types, skip, (req, res, next) => {
   next();
 }, nextEndpoint);
 
+app.get('/skip', stack, types, skip, (req, res, next) => {
+  const skipCount = parseInt(req.query.skip, 10);
+
+  req.query.s = skipCount;
+
+  next();
+}, nextEndpoint);
+
 // Function Call
 
 app.get('/*', stack, types, skip, (req, res, next) => {

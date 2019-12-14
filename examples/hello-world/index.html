@@ -27,7 +27,7 @@ const errorPrinter = (err) => {
 	document.querySelector('#log').appendChild(entry);
 };
 
-fetch(`http://moonhorse/add?a=1&a=2&next=${e(`/printf?a=${e('Hello, %d world!')}`)}`, {
+fetch(`https://moonhorse.makerforce.io/add?a=1&a=2&next=${e(`/printf?a=${e('Hello, %d world!')}`)}`, {
 	redirect: 'follow',
 })
 .then(jsonify)

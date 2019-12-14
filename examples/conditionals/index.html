@@ -20,7 +20,7 @@ const url = (strings, ...values) => {
 	}).join('');
 };
 const compile = (code) => {
-	return 'http://moonhorse' + code.reverse().reduce((a, b) => {
+	return 'https://moonhorse.makerforce.io' + code.reverse().reduce((a, b) => {
 		let sep = b.indexOf('?') === -1 ? '?' : '&';
 		return `${b}${sep}next=${encodeURIComponent(a)}`;
 	});

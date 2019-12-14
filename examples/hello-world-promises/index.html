@@ -43,10 +43,10 @@ document.querySelector('#run').addEventListener('submit', (e) => {
 	const radius = form.get('radius');
 
 	(async () => {
-		const pi = (await fetch(url`http://moonhorse/constants?a=PI`).then(jsonify)).result;
-		const rsquare = (await fetch(url`http://moonhorse/square?a=${radius}`).then(jsonify)).result;
-		const multiply = (await fetch(url`http://moonhorse/multiply?a=${pi}&a=${rsquare}`).then(jsonify)).result;
-		const printtext = (await fetch(url`http://moonhorse/printf?a=${multiply}&a=${'Your circle is of area %f'}`).then(jsonify));
+		const pi = (await fetch(url`https://moonhorse.makerforce.io/constants?a=PI`).then(jsonify)).result;
+		const rsquare = (await fetch(url`https://moonhorse.makerforce.io/square?a=${radius}`).then(jsonify)).result;
+		const multiply = (await fetch(url`https://moonhorse.makerforce.io/multiply?a=${pi}&a=${rsquare}`).then(jsonify)).result;
+		const printtext = (await fetch(url`https://moonhorse.makerforce.io/printf?a=${multiply}&a=${'Your circle is of area %f'}`).then(jsonify));
 		printer(printtext);	
 	})();
 });

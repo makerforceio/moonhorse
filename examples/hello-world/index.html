@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hello, world!</title>
+</head>
+<body>
+<pre id="log"></pre>
+<script>
+const e = encodeURIComponent;
+const jsonify = async (res) => {
+	if (!res.ok) {
+		throw new Error("Request Failed: " + await res.text());
+	}
+	return res.json();
+};
+const printer = (data) => {
+	const entry = document.createElement("span");
+	entry.innerText = data.result;
+	document.querySelector("#log").appendChild(entry);
+};
+const errorPrinter = (err) => {
+	const entry = document.createElement("span");
+	entry.innerText = err;
+	entry.style.color = "red";
+	document.querySelector("#log").appendChild(entry);
+};
+
+fetch(`http://moonhorse/print?a=${e("Hello, world!")}`)
+	.then(jsonify)
+	.then(printer, errorPrinter);
+</script>
+</body>
+</html>
+

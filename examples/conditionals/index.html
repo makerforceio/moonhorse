@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Using conditionals</title>
+</head>
+<body>
+<form id="run">
+	<label for="radius">Radius:</label>
+	<input type="number" id="area" name="area" value="8">
+	<input type="submit" value="Run">
+</form>
+<pre id="log"></pre>
+<script>
+const url = (strings, ...values) => {
+	return strings.map((string, i) => {
+		const value = values[i] === undefined ? '' : encodeURIComponent(values[i])
+		return string + value
+	}).join('');
+};
+const compile = (code) => {
+	return 'http://moonhorse/' + code.reverse().reduce((a, b) => {
+		let sep = b.indexOf('?') === -1 ? '?' : '&';
+		return `${b}${sep}next=${encodeURIComponent(a)}`;
+	});
+};
+const jsonify = async (res) => {
+	if (!res.ok) {
+		throw new Error('Request Failed: ' + await res.text());
+	}
+	return res.json();
+};
+const printer = (data) => {
+	const entry = document.createElement('div');
+	entry.innerText = data.result;
+	document.querySelector('#log').appendChild(entry);
+};
+const errorPrinter = (err) => {
+	const entry = document.createElement('div');
+	entry.innerText = err;
+	entry.style.color = 'red';
+	document.querySelector('#log').appendChild(entry);
+};
+
+const code = (radius) => {
+	return [
+		url`constants?a=PI`, // Constants read a constant from a constant database. argc=1
+		url`square?a=${radius}`, // Squares a number. argc=1
+		url`multiply`, // Multiplies two numbers. argc=2
+		url`is/lessthan?a=${10}`, // Tests if number is less than next number. argc=2
+		url`then?skip=2`, // Skip n instructions if true. argc=1
+		url`printf?a=${'Your bigger circle is of area %d'}`,
+		url`skip?skip=1`, // Skip n instructions. argc=0
+		url`printf?a=${'Your smaller circle is of area %d'}`,
+		url`printf?a=${'Bye!'}`,
+	];
+};
+
+document.querySelector('#run').addEventListener('submit', (e) => {
+	e.preventDefault();
+	const form = new FormData(e.target);
+	const area = form.get('area');
+	const compiled = compile(code(area));
+	fetch(compiled, {
+		redirect: 'follow',
+	})
+	.then(jsonify)
+	.then(printer, errorPrinter);
+});
+</script>
+</body>
+</html>

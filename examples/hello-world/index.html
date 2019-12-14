@@ -11,25 +11,27 @@
 const e = encodeURIComponent;
 const jsonify = async (res) => {
 	if (!res.ok) {
-		throw new Error("Request Failed: " + await res.text());
+		throw new Error('Request Failed: ' + await res.text());
 	}
 	return res.json();
 };
 const printer = (data) => {
-	const entry = document.createElement("span");
+	const entry = document.createElement('div');
 	entry.innerText = data.result;
-	document.querySelector("#log").appendChild(entry);
+	document.querySelector('#log').appendChild(entry);
 };
 const errorPrinter = (err) => {
-	const entry = document.createElement("span");
+	const entry = document.createElement('div');
 	entry.innerText = err;
-	entry.style.color = "red";
-	document.querySelector("#log").appendChild(entry);
+	entry.style.color = 'red';
+	document.querySelector('#log').appendChild(entry);
 };
 
-fetch(`http://moonhorse/add?a=1&a=2&next=${e(`printf?a=${e("Hello, %d world!")}`)}`)
-	.then(jsonify)
-	.then(printer, errorPrinter);
+fetch(`http://moonhorse/add?a=1&a=2&next=${e(`printf?a=${e('Hello, %d world!')}`)}`, {
+	redirect: 'follow',
+})
+.then(jsonify)
+.then(printer, errorPrinter);
 </script>
 </body>
 </html>

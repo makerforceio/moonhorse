@@ -62,6 +62,30 @@ const stack = (req, res, next) => {
   next();
 };
 
+const types = (req, res, next) => {
+  req.stack = req.stack.map(val => {
+    // To number
+    if (!isNaN(+val)) {
+      return val;
+    }
+
+    // To bool/null/undefined
+    if (val == 'false') {
+      return false;
+    } else if (val == 'true') {
+      return true;
+    } else if (val == 'null') {
+      return null;
+    } else if (val == 'undefined') {
+      return undefined;
+    }
+
+    return val;
+  });   
+
+  next();
+};
+
 const skip = (req, res, next) => {
   if (req.query.s && req.query.s > 0) {
     req.query.s--;
@@ -90,7 +114,7 @@ const nextEndpoint = (req, res) => {
   res.redirect(next);
 };
 
-app.get('/:function', stack, skip, (req, res, next) => {
+app.get('/:function', stack, types, skip, (req, res, next) => {
   // Call function
   if (!functions[req.params.function]) {
     res.status(404).send(`function ${req.params.function} not found`);

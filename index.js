@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const express = require('express');
 const openapiJSDoc = require('openapi-jsdoc');
+const swaggerUiAssetPath = require("swagger-ui-dist").absolutePath();
 
 const app = express();
 
@@ -39,6 +40,10 @@ const api = openapiJSDoc({
   apis: ['./index.js', './func/**/*.js']
 });
 
+app.get('/documentation', (req, res) => {
+  res.redirect('/documentation/static/?url=/api-docs.json');
+});
+app.use('/documentation/static/', express.static(swaggerUiAssetPath));
 app.get('/api-docs.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json')
   res.send(api)

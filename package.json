@@ -18,6 +18,7 @@
   "homepage": "https://github.com/serverwentdown/moonhorse#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "openapi-jsdoc": "0.0.2"
+    "openapi-jsdoc": "0.0.2",
+    "swagger-ui-dist": "^3.24.3"
   }
 }

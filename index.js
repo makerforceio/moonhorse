@@ -123,7 +123,7 @@ const nextEndpoint = (req, res) => {
   const stackstring = req.stack.map(entry => `a=${encodeURIComponent(entry)}`).join('&');
   const parts = req.query.next.split('?');
   let next = '';
-  if (parts.length > 1) {
+  if (parts.length > 1 && (!req.query.s || (req.query.s && req.query.s <=0))) {
     next = `${parts[0]}?${stackstring}&${parts[1]}${req.query.s ? `&s=${req.query.s}` : ''}`;
   } else {
     next = `${parts[0]}?${stackstring}${req.query.s ? `&s=${req.query.s}` : ''}`;

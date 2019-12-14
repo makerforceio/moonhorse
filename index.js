@@ -25,35 +25,6 @@ modules.forEach(module => {
   functions[module.replace('./func/', '').replace('.js', '')] = require(module);
 });
 
-app.use((req, res, next) => {
-  req.stack = req.query.stack; 
-  if (!req.stack) {
-    res.sendStatus(400);
-    return;
-  }
-
-  if (!Array.isArray(req.stack)) {
-    req.stack = [ req.stack ];
-  }
-
-  next();
-});
-
-const nextFunc = (req, res) => {
-  if (!req.next) {
-    res.send(req.stack);
-    return;
-  }
-
-
-
-  res.redirect(`/${req.next}`);
-};
-
-app.get('/', (req, res) => {
-  res.send(req.stack);
-});
-
 app.get('/:function', (req, res) => {
   // Populate stack
   req.stack = req.query.a; 

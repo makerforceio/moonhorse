@@ -1,10 +1,29 @@
 const express = require('express');
+const fs = require('fs');
 
 const app = express();
 
-const functions = {
+const walk = (dir) => {
+  let results = [];
+  fs.readdirSync(dir).forEach((file) => {
+    file = dir + '/' + file;
+    const stat = fs.statSync(file);
+    if (stat && stat.isDirectory()) { 
+      /* Recurse into a subdirectory */
+      results = results.concat(walk(file));
+    } else { 
+      /* Is a file */
+      results.push(file);
+    }
+  });
+  return results;
+}
 
-};
+const functions = {};
+const modules = walk('./func');
+modules.forEach(module => {
+  functions[module.replace('./func/', '').replace('.js', '')] = require(module);
+});
 
 app.use((req, res, next) => {
   req.stack = req.query.stack; 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Using conditionals</title>
+	<title>Promises hello, world!</title>
 </head>
 <body>
 <form id="run">
@@ -19,22 +19,11 @@ const url = (strings, ...values) => {
 		return string + value
 	}).join('');
 };
-const compile = (code) => {
-	return 'http://moonhorse' + code.reverse().reduce((a, b) => {
-		let sep = b.indexOf('?') === -1 ? '?' : '&';
-		return `${b}${sep}next=${encodeURIComponent(a)}`;
-	});
-};
 const jsonify = async (res) => {
 	if (!res.ok) {
 		throw new Error('Request Failed: ' + await res.text());
 	}
 	return res.json();
-};
-const stackPrinter = (data) => {
-	data._stack.forEach(item => {
-		printer({ result: item });
-	});
 };
 const printer = (data) => {
 	const entry = document.createElement('div');
@@ -48,31 +37,18 @@ const errorPrinter = (err) => {
 	document.querySelector('#log').appendChild(entry);
 };
 
-const code = (radius) => {
-	return [
-		url`/constants?a=PI`, // Constants read a constant from a constant database. argc=1
-		url`/square?a=${radius}`, // Squares a number. argc=1
-		url`/multiply`, // Multiplies two numbers. argc=2
-		url`/stack/duplicate`, // Duplicates something in the stack. argc=0
-		url`/is/lessthan?a=${10}`, // Tests if number is less than next number. argc=2
-		url`/then?skip=2`, // Skip n instructions if true. argc=1
-		url`/printf?a=${'Your bigger circle is of area %f'}`,
-		url`/skip?skip=1`, // Skip n instructions. argc=0
-		url`/printf?a=${'Your smaller circle is of area %f'}`,
-		url`/printf?a=${'Bye!'}`,
-	];
-};
-
 document.querySelector('#run').addEventListener('submit', (e) => {
 	e.preventDefault();
 	const form = new FormData(e.target);
 	const radius = form.get('radius');
-	const compiled = compile(code(radius));
-	fetch(compiled, {
-		redirect: 'follow',
-	})
-	.then(jsonify)
-	.then(stackPrinter, errorPrinter);
+
+	(async () => {
+		const pi = (await fetch(url`http://moonhorse/constants?a=PI`).then(jsonify)).result;
+		const rsquare = (await fetch(url`http://moonhorse/square?a=${radius}`).then(jsonify)).result;
+		const multiply = (await fetch(url`http://moonhorse/multiply?a=${pi}&a=${rsquare}`).then(jsonify)).result;
+		const printtext = (await fetch(url`http://moonhorse/printf?a=${multiply}&a=${'Your circle is of area %f'}`).then(jsonify));
+		printer(printtext);	
+	})();
 });
 </script>
 </body>

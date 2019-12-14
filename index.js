@@ -80,7 +80,7 @@ const types = (req, res, next) => {
   req.stack = req.stack.map(val => {
     // To number
     if (!isNaN(+val)) {
-      return val;
+      return +val;
     }
 
     // To bool/null/undefined
@@ -133,7 +133,7 @@ const nextEndpoint = (req, res) => {
 
 // Conditionals
 
-app.get('/then', stack, skip, (req, res, next) => {
+app.get('/then', stack, types, skip, (req, res, next) => {
   const skipCount = parseInt(req.query.skip, 10);
 
   if (req.stack.pop()) {
@@ -143,9 +143,17 @@ app.get('/then', stack, skip, (req, res, next) => {
   next();
 }, nextEndpoint);
 
+app.get('/skip', stack, types, skip, (req, res, next) => {
+  const skipCount = parseInt(req.query.skip, 10);
+
+  req.query.s = skipCount;
+
+  next();
+}, nextEndpoint);
+
 // Function Call
 
-app.get('/*', stack, skip, (req, res, next) => {
+app.get('/*', stack, types, skip, (req, res, next) => {
   const functionName = req.params[0];
 
   // Call function

@@ -45,15 +45,15 @@ const errorPrinter = (err) => {
 
 const code = (radius) => {
 	return [
-		url`constants?a=PI`, // Constants read a constant from a constant database. argc=1
-		url`square?a=${radius}`, // Squares a number. argc=1
-		url`multiply`, // Multiplies two numbers. argc=2
-		url`is/lessthan?a=${10}`, // Tests if number is less than next number. argc=2
-		url`then?skip=2`, // Skip n instructions if true. argc=1
-		url`printf?a=${'Your bigger circle is of area %d'}`,
-		url`skip?skip=1`, // Skip n instructions. argc=0
-		url`printf?a=${'Your smaller circle is of area %d'}`,
-		url`printf?a=${'Bye!'}`,
+		url`/constants?a=PI`, // Constants read a constant from a constant database. argc=1
+		url`/square?a=${radius}`, // Squares a number. argc=1
+		url`/multiply`, // Multiplies two numbers. argc=2
+		url`/is/lessthan?a=${10}`, // Tests if number is less than next number. argc=2
+		url`/then?skip=2`, // Skip n instructions if true. argc=1
+		url`/printf?a=${'Your bigger circle is of area %d'}`,
+		url`/skip?skip=1`, // Skip n instructions. argc=0
+		url`/printf?a=${'Your smaller circle is of area %d'}`,
+		url`/printf?a=${'Bye!'}`,
 	];
 };
 

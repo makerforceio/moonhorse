@@ -133,7 +133,7 @@ const nextEndpoint = (req, res) => {
 
 // Conditionals
 
-app.get('/then', stack, skip, (req, res, next) => {
+app.get('/then', stack, types, skip, (req, res, next) => {
   const skipCount = parseInt(req.query.skip, 10);
 
   if (req.stack.pop()) {
@@ -145,7 +145,7 @@ app.get('/then', stack, skip, (req, res, next) => {
 
 // Function Call
 
-app.get('/*', stack, skip, (req, res, next) => {
+app.get('/*', stack, types, skip, (req, res, next) => {
   const functionName = req.params[0];
 
   // Call function

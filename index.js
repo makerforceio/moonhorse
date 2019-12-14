@@ -114,7 +114,8 @@ const nextEndpoint = (req, res) => {
   res.redirect(next);
 };
 
-app.get('/:function', stack, types, skip, (req, res, next) => {
+//app.get('/:function', stack, types, skip, (req, res, next) => {
+app.get(/\/[a-zA-Z/]+/, stack, types, skip, (req, res, next) => {
   // Call function
   if (!functions[req.params.function]) {
     res.status(404).send(`function ${req.params.function} not found`);

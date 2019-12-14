@@ -1,0 +1,22 @@
+{
+  "name": "moonhorse",
+  "version": "1.0.0",
+  "description": "<div align=\"center\"> \t<h1>Moonhorse</h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serverwentdown/moonhorse.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serverwentdown/moonhorse/issues"
+  },
+  "homepage": "https://github.com/serverwentdown/moonhorse#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

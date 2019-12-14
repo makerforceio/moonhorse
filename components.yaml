@@ -1,0 +1,15 @@
+components:
+  responses:
+    continue:
+      description: Redirecting to the specified next function
+    end:
+      description: No other functions to call
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              _stack: 
+                type: array
+                items: {}
+              result: {}

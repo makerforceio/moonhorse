@@ -36,13 +36,13 @@ const api = openapiJSDoc({
       description: 'The Moonhorse API'
     }
   },
-  apis: ['./index.js', './func/**/*.js']
+  apis: ['./components.yaml', './index.js', './func/**/*.js']
 });
 
-app.get('/documentation', (req, res) => {
-  res.redirect('/documentation/static/?url=/api-docs.json');
+app.get('/', (req, res) => {
+  res.redirect('/swaggerui/?url=/api-docs.json');
 });
-app.use('/documentation/static/', express.static(swaggerUiAssetPath));
+app.use('/swaggerui/', express.static(swaggerUiAssetPath));
 app.get('/api-docs.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json')
   res.send(api)

@@ -20,7 +20,7 @@ const url = (strings, ...values) => {
 	}).join('');
 };
 const compile = (code) => {
-	return 'http://moonhorse/' + code.reverse().reduce((a, b) => {
+	return 'http://moonhorse' + code.reverse().reduce((a, b) => {
 		let sep = b.indexOf('?') === -1 ? '?' : '&';
 		return `${b}${sep}next=${encodeURIComponent(a)}`;
 	});
@@ -30,6 +30,11 @@ const jsonify = async (res) => {
 		throw new Error('Request Failed: ' + await res.text());
 	}
 	return res.json();
+};
+const stackPrinter = (data) => {
+	data._stack.forEach(item => {
+		printer({ result: item });
+	});
 };
 const printer = (data) => {
 	const entry = document.createElement('div');
@@ -48,6 +53,7 @@ const code = (radius) => {
 		url`/constants?a=PI`, // Constants read a constant from a constant database. argc=1
 		url`/square?a=${radius}`, // Squares a number. argc=1
 		url`/multiply`, // Multiplies two numbers. argc=2
+		url`/stack/duplicate`, // Duplicates something in the stack. argc=0
 		url`/is/lessthan?a=${10}`, // Tests if number is less than next number. argc=2
 		url`/then?skip=2`, // Skip n instructions if true. argc=1
 		url`/printf?a=${'Your bigger circle is of area %d'}`,
@@ -66,7 +72,7 @@ document.querySelector('#run').addEventListener('submit', (e) => {
 		redirect: 'follow',
 	})
 	.then(jsonify)
-	.then(printer, errorPrinter);
+	.then(stackPrinter, errorPrinter);
 });
 </script>
 </body>

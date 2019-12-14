@@ -5,6 +5,15 @@ const swaggerUiAssetPath = require("swagger-ui-dist").absolutePath();
 
 const app = express();
 
+// General
+
+app.use((req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+// Load Functions
+
 const walk = (dir) => {
   let results = [];
   fs.readdirSync(dir).forEach((file) => {
@@ -21,11 +30,14 @@ const walk = (dir) => {
   return results;
 }
 
-const functions = {};
 const modules = walk('./func');
+const functions = {};
+
 modules.forEach(module => {
   functions[module.replace('./func/', '').replace('.js', '')] = require(module);
 });
+
+// Documentation
 
 const api = openapiJSDoc({
   definition: {
@@ -47,6 +59,8 @@ app.get('/api-docs.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json')
   res.send(api)
 });
+
+// Function Helpers
 
 const stack = (req, res, next) => {
   // Populate stack
@@ -99,7 +113,10 @@ const skip = (req, res, next) => {
 const nextEndpoint = (req, res) => {
   // Call next
   if (!req.query.next) {
-    res.status(200).send(req.stack);
+    res.status(200).send({
+		_stack: req.stack,
+		result: req.stack[req.stack.length - 1],
+	});
     return;
   }
 
@@ -107,24 +124,41 @@ const nextEndpoint = (req, res) => {
   const parts = req.query.next.split('?');
   let next = '';
   if (parts.length > 1) {
-    next = `/${parts[0]}?${stackstring}&${parts[1]}${req.query.s ? `&s=${req.query.s}` : ''}`;
+    next = `${parts[0]}?${stackstring}&${parts[1]}${req.query.s ? `&s=${req.query.s}` : ''}`;
   } else {
-    next = `/${parts[0]}?${stackstring}${req.query.s ? `&s=${req.query.s}` : ''}`;
+    next = `${parts[0]}?${stackstring}${req.query.s ? `&s=${req.query.s}` : ''}`;
   }
   res.redirect(next);
 };
 
-//app.get('/:function', stack, types, skip, (req, res, next) => {
-app.get(/\/[a-zA-Z/]+/, stack, types, skip, (req, res, next) => {
+// Conditionals
+
+app.get('/then', stack, skip, (req, res, next) => {
+  const skipCount = parseInt(req.query.skip, 10);
+
+  if (req.stack.pop()) {
+	  req.query.s = skipCount;
+  }
+
+  next();
+}, nextEndpoint);
+
+// Function Call
+
+app.get('/*', stack, skip, (req, res, next) => {
+  const functionName = req.params[0];
+
   // Call function
-  if (!functions[req.params.function]) {
-    res.status(404).send(`function ${req.params.function} not found`);
+  if (!functions[functionName]) {
+    res.status(404).send(`function ${functionName} not found`);
     return;
   }
 
-  functions[req.params.function](req.stack);
+  functions[functionName](req.stack);
   next();
 }, nextEndpoint);
+
+// Install Handler
 
 app.listen(process.env.PORT, (err) => {
   err ? console.error(err) : console.log(`listening on :${process.env.PORT}`);

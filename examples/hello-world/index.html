@@ -27,7 +27,7 @@ const errorPrinter = (err) => {
 	document.querySelector("#log").appendChild(entry);
 };
 
-fetch(`http://moonhorse/print?a=${e("Hello, world!")}`)
+fetch(`http://moonhorse/add?a=1&a=2&next=${e(`printf?a=${e("Hello, %d world!")}`)}`)
 	.then(jsonify)
 	.then(printer, errorPrinter);
 </script>

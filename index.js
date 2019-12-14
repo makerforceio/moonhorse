@@ -48,26 +48,31 @@ app.get('/api-docs.json', (req, res) => {
   res.send(api)
 });
 
-app.get('/:function', (req, res) => {
+const stack = (req, res, next) => {
   // Populate stack
   req.stack = req.query.a; 
   if (!req.stack) {
     res.stack = [];
-    return;
   }
 
   if (!Array.isArray(req.stack)) {
     req.stack = [ req.stack ];
   }
 
-  // Call function
-  if (!functions[req.params.function]) {
-    res.status(404).send(`function ${req.params.function} not found`);
+  next();
+};
+
+const skip = (req, res, next) => {
+  if (req.query.s && req.query.s > 0) {
+    req.query.s--;
+    nextEndpoint(req, res);
     return;
+  } else {
+    next();
   }
+};
 
-  functions[req.params.function](req.stack);
-
+const nextEndpoint = (req, res) => {
   // Call next
   if (!req.query.next) {
     res.status(200).send(req.stack);
@@ -78,12 +83,23 @@ app.get('/:function', (req, res) => {
   const parts = req.query.next.split('?');
   let next = '';
   if (parts.length > 1) {
-    next = `/${parts[0]}?${stackstring}&skip=${req.query.skip}&${parts[1]}`;
+    next = `/${parts[0]}?${stackstring}&${parts[1]}${req.query.s ? `&s=${req.query.s}` : ''}`;
   } else {
-    next = `/${parts[0]}?${stackstring}&skip=${req.query.skip}`;
+    next = `/${parts[0]}?${stackstring}${req.query.s ? `&s=${req.query.s}` : ''}`;
   }
   res.redirect(next);
-});
+};
+
+app.get('/:function', stack, skip, (req, res, next) => {
+  // Call function
+  if (!functions[req.params.function]) {
+    res.status(404).send(`function ${req.params.function} not found`);
+    return;
+  }
+
+  functions[req.params.function](req.stack);
+  next();
+}, nextEndpoint);
 
 app.listen(process.env.PORT, (err) => {
   err ? console.error(err) : console.log(`listening on :${process.env.PORT}`);

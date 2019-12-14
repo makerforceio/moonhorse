@@ -1,7 +1,5 @@
-const fs = require('fs');
-
 const express = require('express');
-const openapiJSDoc = require('openapi-jsdoc');
+const fs = require('fs');
 
 const app = express();
 
@@ -27,23 +25,6 @@ modules.forEach(module => {
   functions[module.replace('./func/', '').replace('.js', '')] = require(module);
 });
 
-const api = openapiJSDoc({
-  definition: {
-    // info object, see https://swagger.io/specification/#infoObject
-    info: {
-      title: 'Moonhorse', // required
-      version: '1.0.0', // required
-      description: 'The Moonhorse API'
-    }
-  },
-  apis: ['./index.js', './func/**/*.js']
-});
-
-app.get('/api-docs.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json')
-  res.send(api)
-});
-
 app.get('/:function', (req, res) => {
   // Populate stack
   req.stack = req.query.a; 
@@ -56,19 +37,13 @@ app.get('/:function', (req, res) => {
     req.stack = [ req.stack ];
   }
 
-  if (req.query.skip && req.query.skip > 0 ) {
-    req.query.skip--;
-  } else {
-    // Call function
-    if (!functions[req.params.function]) {
-      res.status(404).send(`function ${req.params.function} not found`);
-      return;
-    }
-
-    const { stack, skip } = functions[req.params.function](req.stack);
-    req.stack = stack;
-    req.skip = skip;
+  // Call function
+  if (!functions[req.params.function]) {
+    res.status(404).send(`function ${req.params.function} not found`);
+    return;
   }
+
+  functions[req.params.function](req.stack);
 
   // Call next
   if (!req.query.next) {
